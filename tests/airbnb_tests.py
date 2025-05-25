@@ -19,6 +19,6 @@ def test_airbnb_search(page):
     items = results_page.get_all_items()
     highest_rate = results_page.find_highest_rated_item(items)
     min_price = results_page.find_cheapest_item(items)
-
+    logging.info(f"items: {len(items)}")
     logging.info(f"Highest Rated Item: {highest_rate}")
     logging.info(f"Cheapest Item: {min_price}")

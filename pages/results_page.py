@@ -6,10 +6,10 @@ from pages.base_page import BasePage
 
 class ResultsPage(BasePage):
 
-    ITEM_SELECTOR = 'xpath=//*[@itemprop="itemListElement" and not(ancestor::*[contains(@class, "fqd7fl6")])]'
+    ITEM_SELECTOR = '[itemprop="itemListElement"]'
     NEXT_BUTTON = '[aria-label="Search results pagination"] [aria-label="Next"]'
     NEXT_BUTTON_DISABLED = '[aria-label="Search results pagination"] [aria-label="Next"][aria-disabled="true"]'
-    RATE_SELECTOR = '.r4a59j5'
+    RATING_SELECTOR = '.r4a59j5'
     TOTAL_PRICE = '.c1hpbaeu'
     TITLE = '.t1jojoys'
     PRICE_PER_HOUR = '.u1dgw2qm'
@@ -19,8 +19,8 @@ class ResultsPage(BasePage):
         all_items = []
 
         while True:
-            self.page.wait_for_timeout(3000)
-            items = self.page.locator(self.ITEM_SELECTOR).all_text_contents()
+            self.page.wait_for_timeout(1000)
+            items = self.page.locator(self.ITEM_SELECTOR).all()
             all_items.extend(self.define_item(item) for item in items)
 
             if self.page.locator(self.NEXT_BUTTON_DISABLED).count() > 0:
@@ -29,18 +29,25 @@ class ResultsPage(BasePage):
             self.page.locator(self.NEXT_BUTTON).click()
         return all_items
 
-    def define_item(self, item_data):
-        clean_text = item_data.replace('\xa0', ' ').replace('\n', ' ').strip()
+    def define_item(self, item):
+        try:
+            title = item.locator(self.TITLE).text_content(timeout=5000)
+        except:
+            title = None
 
-        title_match = re.match(r'([^,]+),', clean_text)
-        title = title_match.group(1).strip() if title_match else None
+        try:
+            rating = item.locator(self.RATING_SELECTOR).text_content(timeout=500)
+            match = re.search(r'\d+\.\d+', rating)
+            rating = float(match.group())
+        except:
+            rating = None
 
-        price_match = re.search(r'₪\s?(\d+)\s+total', clean_text)
-        total_price = int(price_match.group(1)) if price_match else None
-
-        rating_match = re.search(r'(\d\.\d{1,2}) out of 5|(\d\.\d{1,2}) \(\d+ reviews?\)', clean_text)
-        rating_str = rating_match.group(1) or rating_match.group(2) if rating_match else None
-        rating = float(rating_str) if rating_str else None
+        try:
+            total_price = item.locator(self.TOTAL_PRICE).text_content(timeout=500)
+            match = re.search(r'₪\s*(\d+)', total_price)
+            total_price = match.group(0)
+        except:
+            total_price = None
 
         return Item(title=title, rating=rating, total_price=total_price)
 
