@@ -23,7 +23,7 @@ class ResultsPage(BasePage):
             items = self.page.locator(self.ITEM_SELECTOR).all()
             all_items.extend(self.define_item(item) for item in items)
 
-            if self.page.locator(self.NEXT_BUTTON_DISABLED).count() > 0:
+            if self.page.locator(self.NEXT_BUTTON_DISABLED).count() == 0:
                 break
 
             self.page.locator(self.NEXT_BUTTON).click()
@@ -49,7 +49,7 @@ class ResultsPage(BasePage):
         except:
             total_price = None
 
-        return Item(title=title, rating=rating, total_price=total_price)
+        return Item(element=item, title=title, rating=rating, total_price=total_price)
 
     @staticmethod
     def find_highest_rated_item(items: List[Item]) -> Optional[Item]:
