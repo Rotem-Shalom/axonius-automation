@@ -1,9 +1,8 @@
-from typing import List
+from pages.results_page import ResultsPage
+from pages.search_page import SearchPage
 import logging
 
 logging.basicConfig(level=logging.INFO)
-from pages.results_page import ResultsPage
-from pages.search_page import SearchPage
 
 def test_airbnb_search(page):
     search_page = SearchPage(page)
@@ -15,6 +14,8 @@ def test_airbnb_search(page):
     search_page.click_on_search()
 
     results_page = ResultsPage(page)
+    assert "Tel Aviv" in results_page.get_page_heading_text()
+
     items = results_page.get_all_items()
     highest_rate = results_page.find_highest_rated_item(items)
     min_price = results_page.find_cheapest_item(items)

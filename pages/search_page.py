@@ -37,40 +37,4 @@ class SearchPage(BasePage):
         self.page.click(self.SEARCH_BUTTON)
         self.page.wait_for_selector(self.SEARCH_RESULTS)
 
-    def get_results(self):
-        return self.page.query_selector_all(self.SEARCH_RESULTS)
 
-    def log_top_results(self):
-        cards = self.page.locator(self.SEARCH_RESULTS)
-        count = cards.count()
-        if count == 0:
-            print("No results found.")
-            return
-
-        # Find and log top-rated and cheapest
-        cheapest_price = float("inf")
-        highest_rating = 0
-        cheapest_info = ""
-        highest_info = ""
-
-        for i in range(min(count, 20)):
-            card = cards.nth(i)
-            try:
-                price = card.locator('[data-testid="price"]').text_content()
-                price_num = int(''.join(filter(str.isdigit, price)))
-
-                rating = card.locator('[aria-label*="rating"]').first.text_content()
-                rating_num = float(rating) if rating else 0.0
-
-                if price_num < cheapest_price:
-                    cheapest_price = price_num
-                    cheapest_info = f"Cheapest: {price} | Rating: {rating_num}"
-
-                if rating_num > highest_rating:
-                    highest_rating = rating_num
-                    highest_info = f"Top Rated: {price} | Rating: {rating_num}"
-            except:
-                continue
-
-        print(cheapest_info)
-        print(highest_info)

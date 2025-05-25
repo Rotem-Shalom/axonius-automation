@@ -13,6 +13,7 @@ class ResultsPage(BasePage):
     TOTAL_PRICE = '.c1hpbaeu'
     TITLE = '.t1jojoys'
     PRICE_PER_HOUR = '.u1dgw2qm'
+    RESULTS_HEADING = '[data-testid="stays-page-heading"]'
 
     def get_all_items(self):
         all_items = []
@@ -41,20 +42,21 @@ class ResultsPage(BasePage):
         rating_str = rating_match.group(1) or rating_match.group(2) if rating_match else None
         rating = float(rating_str) if rating_str else None
 
-        return Item(title=title, rate=rating, total_price=total_price)
+        return Item(title=title, rating=rating, total_price=total_price)
 
     @staticmethod
     def find_highest_rated_item(items: List[Item]) -> Optional[Item]:
-        rated_items = [item for item in items if item.rate is not None]
+        rated_items = [item for item in items if item.rating is not None]
         if not rated_items:
             return None
-        return max(rated_items, key=lambda item: item.rate)
+        return max(rated_items, key=lambda item: item.rating)
 
     @staticmethod
     def find_cheapest_item(items: list[Item]) -> Optional[Item]:
-        return min(items, key=lambda item: item.total_price, default=None)
+        priced_items = [item for item in items if item.total_price is not None]
+        if not priced_items:
+            return None
+        return min(priced_items, key=lambda item: item.total_price)
 
-    def log_result_details(self, result):
-        print(f"Title: {result['title']}")
-        print(f"Price: {result['price']}")
-        print(f"Rating: {result['rating']}")
+    def get_page_heading_text(self):
+        return self.page.locator(self.RESULTS_HEADING).text_content()
