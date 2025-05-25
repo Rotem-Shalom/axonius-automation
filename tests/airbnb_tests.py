@@ -47,6 +47,7 @@ def test_airbnb_search2(page):
     reservation_details.print_reservation_details()
     confirm_page = reservation_page.enter_on_reserve()
     confirm_reservation_details = confirm_page.get_confirm_reservation_details()
-    # assert reservation_details == confirm_reservation_details
+    print(confirm_reservation_details.price_parameters)
+    assert reservation_details == confirm_reservation_details
     confirm_page.enter_phone_number('546876567')
 

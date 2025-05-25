@@ -1,13 +1,14 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Dict
 
 @dataclass
 class ReservationDetails:
-    check_in: str
-    check_out: str
-    guests_count: int
-    price_parameters: Dict[str, int]
-    total_price: int
+    check_in: datetime
+    check_out: datetime
+    guests_count: str
+    price_parameters: Dict[str, str]
+    total_price: str
 
     def print_reservation_details(self):
         print("reservation details: \n"

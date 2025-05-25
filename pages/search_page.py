@@ -13,6 +13,7 @@ class SearchPage(BasePage):
 
 
     def set_location(self, location: str):
+        self.page.wait_for_timeout(2000)
         self.page.evaluate("window.scrollTo(0, 0)")
         self.page.fill(self.LOCATION_INPUT, location)
         self.page.keyboard.press("Enter")

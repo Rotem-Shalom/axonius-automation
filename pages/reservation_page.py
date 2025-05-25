@@ -1,3 +1,7 @@
+from datetime import datetime
+from typing import Optional
+import re
+
 from models.reservation_details import ReservationDetails
 from pages.base_page import BasePage
 from pages.confirm_reservation_page import ConfirmReservationPage
@@ -16,17 +20,24 @@ class ReservationPage(BasePage):
     RESERVE_BUTTON = '[data-section-id="BOOK_IT_SIDEBAR"] [data-testid="homes-pdp-cta-btn"]'
 
     def get_reservation_details(self):
+        self.page.wait_for_timeout(1000)
         check_in = self.page.locator(self.CHECK_IN).text_content()
+        formatted_check_in = datetime.strptime(check_in, "%m/%d/%Y")
         check_out = self.page.locator(self.CHECK_OUT).text_content()
-        guests_count = self.page.locator(self.GUESTS_COUNT).text_content()
-        price_parameters = self.page.locator(self.PRICE_PARAMETERS).all_text_contents()
-        price_parameters_value = self.page.locator(self.PRICE_PARAMETERS_VALUE).all_text_contents()
-        total_price = self.page.locator(self.TOTAL_PRICE).text_content()
+        formatted_check_out = datetime.strptime(check_out, "%m/%d/%Y")
+        guests_count = self.page.locator(self.GUESTS_COUNT).text_content().replace("\xa0", " ")
+        price_parameters = [self.remove_float(val) for val in self.page.locator(self.PRICE_PARAMETERS).all_text_contents()]
+        price_parameters_value = [self.remove_float(val) for val in self.page.locator(self.PRICE_PARAMETERS_VALUE).all_text_contents()]
+        total_price_text = self.page.locator(self.TOTAL_PRICE).text_content()
         all_price_parameters = dict(zip(price_parameters, price_parameters_value))
+        total_price = self.remove_float(total_price_text)
 
-        return ReservationDetails(check_in=check_in, check_out=check_out, guests_count=guests_count, price_parameters=all_price_parameters, total_price=total_price)
+        return ReservationDetails(check_in=formatted_check_in, check_out=formatted_check_out, guests_count=guests_count, price_parameters=all_price_parameters, total_price=total_price)
 
     def enter_on_reserve(self):
         self.page.click(self.RESERVE_BUTTON)
         return ConfirmReservationPage(self.page)
 
+    @staticmethod
+    def remove_float(text: str):
+        return re.sub(r'\.(\d+)', '', text)
