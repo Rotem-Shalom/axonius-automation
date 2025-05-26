@@ -1,5 +1,6 @@
 from pages.base_page import BasePage
-import time
+from utils import consts
+
 
 class SearchPage(BasePage):
     LOCATION_INPUT = '.fp9kp52'
@@ -11,27 +12,22 @@ class SearchPage(BasePage):
     SEARCH_BUTTON = '[data-testid="structured-search-input-search-button"]'
     SEARCH_RESULTS = 'div[itemscope]'
 
-
     def set_location(self, location: str):
-        self.page.wait_for_timeout(2000)
-        self.page.evaluate("window.scrollTo(0, 0)")
+        self.scroll_web_up()
         self.page.fill(self.LOCATION_INPUT, location)
-        self.page.keyboard.press("Enter")
-        self.page.keyboard.press("Escape")
+        self.press_enter()
+        self.press_escape()
 
     def set_random_dates(self):
-        self.page.evaluate("window.scrollTo(0, 0)")
-        self.page.locator(self.SEARCH_PARAMETER, has_text="Check in").click()
+        self.page.locator(self.SEARCH_PARAMETER, has_text=consts.CHECK_IN).click()
         days = self.page.locator(self.DAY_DATE)
         days.first.click()
-        self.page.keyboard.press("Escape")
-        self.page.evaluate("window.scrollTo(0, 0)")
-        self.page.locator(self.SEARCH_PARAMETER, has_text="Check out").click()
+        self.press_escape()
+        self.page.locator(self.SEARCH_PARAMETER, has_text=consts.CHECK_OUT).click()
         days.nth(1).click()
-        self.page.keyboard.press("Escape")
+        self.press_escape()
 
     def set_guests(self, adults=2, children=0):
-        self.page.evaluate("window.scrollTo(0, 0)")
         self.page.click(self.ADD_GUESTS)
         for i in range(adults):
             self.page.click(self.STEPPER_ADULTS_INCREASE)
@@ -42,4 +38,6 @@ class SearchPage(BasePage):
         self.page.click(self.SEARCH_BUTTON)
         self.page.wait_for_selector(self.SEARCH_RESULTS)
 
-
+    def scroll_web_up(self):
+        self.page.wait_for_timeout(2000)
+        self.page.evaluate("window.scrollTo(0, 0)")

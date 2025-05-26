@@ -1,4 +1,7 @@
-from playwright.sync_api import Page
+from typing import Optional
+
+from playwright.sync_api import Page, Locator
+
 
 class BasePage:
     def __init__(self, page: Page):
@@ -15,3 +18,15 @@ class BasePage:
 
     def wait_for_selector(self, selector: str):
         self.page.wait_for_selector(selector)
+
+    def press_enter(self):
+        self.page.keyboard.press("Enter")
+
+    def press_escape(self):
+        self.page.keyboard.press("Escape")
+
+    def safe_text(self, item: Locator, selector: str, timeout: int = 1000) -> Optional[str]:
+        try:
+            return item.locator(selector).text_content(timeout=timeout)
+        except:
+            return None

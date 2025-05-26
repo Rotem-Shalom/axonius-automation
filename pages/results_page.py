@@ -1,11 +1,13 @@
 from typing import List, Optional
 
+from playwright.sync_api import Locator
+
 from models.item import Item
-import re
 from pages.base_page import BasePage
+from utils.parsers import extract_float_from_text, extract_price_from_text
+
 
 class ResultsPage(BasePage):
-
     ITEM_SELECTOR = '[itemprop="itemListElement"]'
     NEXT_BUTTON = '[aria-label="Search results pagination"] [aria-label="Next"]'
     NEXT_BUTTON_DISABLED = '[aria-label="Search results pagination"] [aria-label="Next"][aria-disabled="true"]'
@@ -29,28 +31,6 @@ class ResultsPage(BasePage):
             self.page.locator(self.NEXT_BUTTON).click()
         return all_items
 
-    def define_item(self, item):
-        try:
-            title = item.locator(self.TITLE).text_content(timeout=5000)
-        except:
-            title = None
-
-        try:
-            rating = item.locator(self.RATING_SELECTOR).text_content(timeout=500)
-            match = re.search(r'\d+\.\d+', rating)
-            rating = float(match.group())
-        except:
-            rating = None
-
-        try:
-            total_price = item.locator(self.TOTAL_PRICE).text_content(timeout=500)
-            match = re.search(r'₪\s*(\d+)', total_price)
-            total_price = match.group(0)
-        except:
-            total_price = None
-
-        return Item(element=item, title=title, rating=rating, total_price=total_price)
-
     @staticmethod
     def find_highest_rated_item(items: List[Item]) -> Optional[Item]:
         rated_items = [item for item in items if item.rating is not None]
@@ -67,3 +47,13 @@ class ResultsPage(BasePage):
 
     def get_page_heading_text(self):
         return self.page.locator(self.RESULTS_HEADING).text_content()
+
+    def define_item(self, item: Locator) -> Item:
+        title = self.safe_text(item, self.TITLE)
+        rating_text = self.safe_text(item, self.RATING_SELECTOR)
+        total_price_text = self.safe_text(item, self.TOTAL_PRICE)
+
+        rating = extract_float_from_text(rating_text) if rating_text else None
+        total_price = extract_price_from_text(total_price_text) if total_price_text else None
+
+        return Item(element=item, title=title, rating=rating, total_price=total_price)

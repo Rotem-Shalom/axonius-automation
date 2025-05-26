@@ -1,0 +1,5 @@
+CHECK_IN = "Check in"
+CHECK_OUT = "Check out"
+TEST_CITY = "Tel Aviv"
+AIRBNB_WEB_ADDRESS = "https://www.airbnb.com/"
+DATE_FORMAT = "%m/%d/%Y"
