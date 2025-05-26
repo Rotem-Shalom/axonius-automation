@@ -31,6 +31,7 @@ def format_date(text: str):
     return datetime.strptime(text, consts.DATE_FORMAT)
 
 
+# parse dates like "May 26–27" to datetime
 def parse_checkin_checkout(date_str: str):
     clean_str = date_str.replace('\u2009', '').replace('–', '-').replace('\u2013', '-').strip()
 

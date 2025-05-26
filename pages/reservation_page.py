@@ -33,6 +33,7 @@ class ReservationPage(BasePage):
         self.page.click(self.RESERVE_BUTTON_SELECTOR)
         return ConfirmReservationPage(self.page)
 
+    # Closes the popup window
     def close_translation_window(self):
         try:
             button = self.page.wait_for_selector(self.TRANSLATION_CLOSE_BUTTON_SELECTOR)
