@@ -32,22 +32,16 @@ def format_date(text: str):
 
 
 def parse_checkin_checkout(date_str: str):
-    try:
-        date_str = date_str.replace('\u2009', '').replace('\u2013', '-').replace('–', '-').strip()
+    clean_str = date_str.replace('\u2009', '').replace('–', '-').replace('\u2013', '-').strip()
 
-        parts = date_str.split(' ', 1)
-        if len(parts) != 2:
-            raise ValueError(f"Unexpected format: {date_str}")
+    month_and_day_from, day_to_str = clean_str.split('-')
+    month_str, day_from_str = month_and_day_from.split()
+    day_from = int(day_from_str)
+    day_to = int(day_to_str)
+    year = datetime.now().year
+    month = datetime.strptime(month_str, '%b').month
 
-        month_str, day_range = parts
-        day_from, day_to = map(int, day_range.split('-'))
+    check_in = datetime(year, month, day_from)
+    check_out = datetime(year, month, day_to)
 
-        current_year = datetime.now().year
-        month_number = datetime.strptime(month_str, '%b' if len(month_str) == 3 else '%B').month
-
-        check_in = datetime.strptime(f"{day_from}/{month_number}/{current_year}", "%d/%m/%Y")
-        check_out = datetime.strptime(f"{day_to}/{month_number}/{current_year}", "%d/%m/%Y")
-
-        return check_in, check_out
-    except Exception as e:
-        raise ValueError(f"Invalid date format '{date_str}': {e}")
+    return check_in, check_out
