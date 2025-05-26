@@ -9,7 +9,7 @@ class ReservationDetails:
     check_out: datetime
     guests_count: str
     price_parameters: Dict[str, str]
-    total_price: str
+    total_price: int
 
     def print_details(self):
         print("reservation details: \n"

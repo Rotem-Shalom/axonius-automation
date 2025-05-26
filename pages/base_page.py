@@ -10,15 +10,6 @@ class BasePage:
     def go_to(self, url: str):
         self.page.goto(url)
 
-    def click(self, selector: str):
-        self.page.click(selector)
-
-    def type_text(self, selector: str, text: str):
-        self.page.fill(selector, text)
-
-    def wait_for_selector(self, selector: str):
-        self.page.wait_for_selector(selector)
-
     def press_enter(self):
         self.page.keyboard.press("Enter")
 

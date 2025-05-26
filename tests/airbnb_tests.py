@@ -17,17 +17,17 @@ class TestAirbnb:
         search_page = SearchPage(page)
         search_page.go_to(consts.AIRBNB_WEB_ADDRESS)
         generate_search_with_random_dates(search_page=search_page, location=consts.TEST_CITY,
-                                          adults_count=2,children_count=0)
+                                          adults_count=2, children_count=0)
         return ResultsPage(page)
 
-    def test_airbnb_search(self, setup_search):
+    def test_validate_search_and_get_highest_and_cheapest_items(self, setup_search):
         results_page = setup_search
         assert consts.TEST_CITY in results_page.get_page_heading_text()
         items = results_page.get_all_items()
         logging.info(f"Highest Rated Item: {results_page.find_highest_rated_item(items)}")
         logging.info(f"Cheapest Item: {results_page.find_cheapest_item(items)}")
 
-    def test_airbnb_search2(self, setup_search, page):
+    def test_validate_search_and_reservation_details(self, setup_search, page):
         results_page = setup_search
         assert consts.TEST_CITY in results_page.get_page_heading_text()
         highest_rate = results_page.find_highest_rated_item(results_page.get_all_items())
@@ -37,7 +37,5 @@ class TestAirbnb:
         reservation_details.print_details()
         confirm_page = reservation_page.enter_on_reserve()
         confirm_reservation_details = confirm_page.get_confirm_reservation_details()
-        print(reservation_page)
-        print(confirm_reservation_details)
         assert reservation_details == confirm_reservation_details
         confirm_page.enter_phone_number('546876567')
